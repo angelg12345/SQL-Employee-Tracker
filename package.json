@@ -1,7 +1,9 @@
 {
   "dependencies": {
-    "inquirer": "^8.2.4",
+    "console.table": "^0.10.0",
+    "dotenv": "^16.3.1",
     "express": "^4.17.1",
-    "mysql2": "^2.2.5"
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.3.3"
   }
 }

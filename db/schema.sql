@@ -5,12 +5,12 @@ CREATE DATABASE employeeTrackerDB;
 USE employeeTrackerDB;
 
 CREATE TABLE department (
-    department_id INT,
+    department_id INT AUTO_INCREMENT PRIMARY KEY,
     department_name VARCHAR(30)
 );
 
 CREATE TABLE role (
-    role_id INT,
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30),
     salary DECIMAL,
     department_id INT,
