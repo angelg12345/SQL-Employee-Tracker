@@ -65,3 +65,22 @@ function startApp() {
         }
     });
 }
+
+function viewDepartments(){
+    const query = 'SELECT * FROM department';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        startApp();
+    });
+}
+
+function viewRoles() {
+    const query = 'SELECT * FROM role';
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        startApp();
+    });
+}
+
