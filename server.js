@@ -2,6 +2,7 @@ const mysql = require('mysql2');
 const inquirer = require('inquirer');
 const express = require('express');
 const cTable = require('console.table');
+const { error } = require('console');
 require('dotenv').config();
 
 
@@ -75,8 +76,22 @@ function viewDepartments(){
     });
 }
 
-function viewRoles() {
-    const query = 'SELECT * FROM role';
+const viewRoles = () => {
+    const query = `
+        SELECT role.role_id, role.title, role.salary, department.department_name
+        FROM role
+        INNER JOIN department ON role.department_id = department.department_id
+    `;
+    connection.query(query, (err, results) => {
+        if (err) throw err;
+        console.table(results);
+        startApp();
+    });
+};
+
+
+function viewEmployees() {
+    const query = 'SELECT * FROM employee';
     connection.query(query, (err, results) => {
         if (err) throw err;
         console.table(results);
@@ -84,3 +99,50 @@ function viewRoles() {
     });
 }
 
+function addDepartment(){
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'departmentName',
+            message: 'Enter the name of the department:'
+        }
+    ]).then((answer) => {
+        connection.query('INSERT INTO department (department_name) VALUES (?)', [answer.departmentName], (err, res) => {
+            if (err) throw err;
+            console.log('Department added successfully!');
+            startApp();
+        });
+    });
+}
+
+function addRole(){
+    connection.query('SELECT * FROM department', (err, departments) => {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: 'Enter the name of the role:'
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: 'Enter the salary for the role:'
+            },
+            {
+                type: 'list',
+                name: 'departmentID',
+                message: 'Select the department for the role:',
+                choices: departments.map(department => ({ name: department.department_name, value: department.department_id}))
+            }
+        ]).then((answer) => {
+            connection.query('INSERT INTO role (title, salary, department_id) VALUES(?, ?, ?)',
+            [answer.title, answer.salary, answer.departmentID],
+            (err, res) => {
+                if (err) throw err;
+                console.log('role added successfully!');
+                startApp();
+            });
+        })
+    })
+}
