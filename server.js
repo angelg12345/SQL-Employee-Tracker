@@ -146,3 +146,84 @@ function addRole(){
         })
     })
 }
+
+const addEmployee = () => {
+    inquirer.prompt([
+        {
+            name: 'firstName',
+            type: 'input',
+            message: 'Enter the employee\'s first name:'
+        },
+        {
+            name: 'lastName',
+            type: 'input',
+            message: 'Enter the employee\'s last name:'
+        },
+        {
+            name: 'roleId',
+            type: 'input',
+            message: 'Enter the employee\'s role ID:'
+        },
+        {
+            name: 'managerId',
+            type: 'input',
+            message: 'Enter the employee\'s manager ID(if applicable):'
+        },
+    ]).then((answers) => {
+        const query = 'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+        connection.query(query, [answers.firstName, answers.lastName, answers.roleId, answers.managerId], (err, res) => {
+            if (err) throw err;
+            console.log('Employee added successfully!');
+            startApp();
+        });
+    });
+};
+
+const updateEmployee = () => {
+   
+    let employees;
+    let roles;
+
+  
+    connection.query('SELECT employee_id, first_name, last_name FROM employee', (err, empResults) => {
+        if (err) throw err;
+        employees = empResults;
+
+      
+        connection.query('SELECT role_id, title FROM role', (err, roleResults) => {
+            if (err) throw err;
+            roles = roleResults;
+
+          
+            inquirer.prompt([
+                {
+                    name: 'employeeId',
+                    type: 'list',
+                    message: 'Select the employee to update:',
+                    choices: employees.map(employee => ({
+                        name: `${employee.first_name} ${employee.last_name}`,
+                        value: employee.employee_id
+                    }))
+                },
+                {
+                    name: 'roleId',
+                    type: 'list',
+                    message: 'Select the new role for the employee:',
+                    choices: roles.map(role => ({
+                        name: role.title,
+                        value: role.role_id
+                    }))
+                }
+            ]).then((answers) => {
+                const query = 'UPDATE employee SET role_id = ? WHERE employee_id = ?';
+                connection.query(query, [answers.roleId, answers.employeeId], (err, res) => {
+                    if (err) throw err;
+                    console.log('Employee role updated successfully!');
+                    startApp()
+                });
+            });
+        });
+    });
+};
+    
+    
