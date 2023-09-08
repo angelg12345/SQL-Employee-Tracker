@@ -91,13 +91,29 @@ const viewRoles = () => {
 
 
 function viewEmployees() {
-    const query = 'SELECT * FROM employee';
+    const query = `
+    SELECT 
+        employee.employee_id, 
+        employee.first_name, 
+        employee.last_name, 
+        role.title AS role_title, 
+        role.salary, 
+        department.department_name, 
+        CONCAT(manager.first_name, ' ', manager.last_name) AS manager_name
+    FROM 
+        employee
+    LEFT JOIN role ON employee.role_id = role.role_id
+    LEFT JOIN department ON role.department_id = department.department_id
+    LEFT JOIN employee AS manager ON employee.manager_id = manager.employee_id
+`;
+
     connection.query(query, (err, results) => {
         if (err) throw err;
         console.table(results);
         startApp();
     });
 }
+
 
 function addDepartment(){
     inquirer.prompt([
